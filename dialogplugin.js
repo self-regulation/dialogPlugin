@@ -24,7 +24,6 @@
             if (this.status === 'message') {
                 this.createMessage();
                 this.open();
-
                 return;
             }
         }
@@ -38,12 +37,13 @@
             `;
             document.body.appendChild(this.messageBox);
 
-            this.messageBox.onclick = (ev)=>{
+            this.messageBox.onclick = (ev) => {
                 let target = ev.target;
-                if(target.className === 'dpn-close'){
+                if (target.className === 'dpn-close') {
                     this.close();
                 }
             };
+            this.oninit();
 
         }
         //创建dialog模板
@@ -54,11 +54,16 @@
         open() {
             if (this.status === 'message') {
                 this.messageBox.offsetHeight;
-                this.messageBox.style.top = '20px';
+
+                let messageBoxs = document.querySelectorAll('.dpn-message');
+                let len = messageBoxs.length;
+                this.messageBox.style.top = `${len===1?20:20+(len-1)*70}px`;
 
                 this.autoTimer = setTimeout(() => {
                     this.close();
                 }, this.durations);
+
+                this.onopen();
                 return;
             }
 
@@ -68,10 +73,12 @@
             if (this.status === 'message') {
                 clearTimeout(this.autoTimer);
                 this.messageBox.style.top = '-200px';
-                
+
                 let anonymous = () => {
                     document.body.removeChild(this.messageBox);
                     this.messageBox.removeEventListener('animationend');
+                    
+                    this.onclose();
                 };
                 this.messageBox.addEventListener('animationend', anonymous);
             }
